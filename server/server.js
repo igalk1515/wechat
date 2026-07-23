@@ -6,10 +6,17 @@ const { WebSocketServer } = require('ws');
 const rooms = require('./rooms');
 
 const PORT = process.env.PORT || 8787;
+const HOST = process.env.HOST || '0.0.0.0';
+
+// Written by infra/deploy.sh so smoke tests can verify which revision is live
+let release = 'dev';
+try {
+  release = require('fs').readFileSync(__dirname + '/release.txt', 'utf8').trim();
+} catch {}
 
 const httpServer = http.createServer((req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end('Sketch Together server is running\n');
+  res.end(`Sketch Together server is running (${release})\n`);
 });
 
 const wss = new WebSocketServer({ server: httpServer });
@@ -138,6 +145,6 @@ wss.on('connection', (ws) => {
   });
 });
 
-httpServer.listen(PORT, () => {
-  console.log(`Sketch Together server listening on ws://localhost:${PORT}`);
+httpServer.listen(PORT, HOST, () => {
+  console.log(`Sketch Together server listening on ws://${HOST}:${PORT}`);
 });
