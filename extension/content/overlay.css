@@ -1,0 +1,97 @@
+/* Canvas overlay — sits above everything, ignores the mouse unless draw mode is on */
+#sketch-together-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483646;
+  pointer-events: none;
+}
+
+#sketch-together-overlay canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+#sketch-together-overlay.st-drawmode canvas {
+  pointer-events: auto;
+  cursor: crosshair;
+}
+
+/* Floating toolbar */
+#sketch-together-toolbar {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 2147483647;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: #1f2430;
+  color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 13px;
+  line-height: 1;
+  pointer-events: auto;
+  user-select: none;
+}
+
+#sketch-together-toolbar .st-handle {
+  cursor: grab;
+  color: #8a93a6;
+  font-size: 14px;
+  padding: 4px 2px;
+}
+
+#sketch-together-toolbar button {
+  all: unset;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 8px;
+  font-size: 15px;
+  line-height: 1;
+  text-align: center;
+}
+
+#sketch-together-toolbar button:hover {
+  background: #333b4d;
+}
+
+#sketch-together-toolbar button.st-active {
+  background: #3b82f6;
+}
+
+#sketch-together-toolbar input[type="color"] {
+  width: 26px;
+  height: 26px;
+  border: none;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+}
+
+#sketch-together-toolbar input[type="range"] {
+  width: 70px;
+  cursor: pointer;
+  accent-color: #3b82f6;
+}
+
+#sketch-together-toolbar .st-room {
+  margin-left: 4px;
+  padding: 4px 8px;
+  background: #333b4d;
+  border-radius: 6px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: #a5c8ff;
+}
+
+#sketch-together-toolbar .st-sep {
+  width: 1px;
+  height: 20px;
+  background: #3a4356;
+}

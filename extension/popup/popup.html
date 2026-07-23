@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header>
+    <span id="statusDot" class="dot"></span>
+    <span id="statusText">Not connected</span>
+  </header>
+
+  <div id="errorLine" class="error" hidden></div>
+
+  <!-- No session: create or join -->
+  <section id="viewIdle" hidden>
+    <label>Server address
+      <input id="serverUrl" type="text" placeholder="ws://localhost:8787" spellcheck="false" />
+    </label>
+
+    <button id="createBtn" class="primary">Create room on this page</button>
+    <div id="createHint" class="hint" hidden>Can't draw on this page — open a normal website first.</div>
+
+    <div class="divider"><span>or join a room</span></div>
+
+    <div class="joinRow">
+      <input id="joinCode" type="text" placeholder="CODE" maxlength="6" spellcheck="false" autocomplete="off" />
+      <button id="joinBtn">Join</button>
+    </div>
+  </section>
+
+  <!-- Active session -->
+  <section id="viewSession" hidden>
+    <div class="roomLabel">Room code — share it with friends</div>
+    <div class="roomRow">
+      <div id="roomCode" class="roomCode">------</div>
+      <button id="copyBtn" title="Copy code">📋</button>
+    </div>
+    <div id="peers" class="peers"></div>
+    <div id="sessionUrl" class="sessionUrl"></div>
+
+    <div id="mismatch" class="mismatch" hidden>
+      This session is on a different page.
+      <button id="openPageBtn" class="primary">Open that page</button>
+    </div>
+
+    <div class="btnRow">
+      <button id="toggleBtn">Show / hide drawing</button>
+      <button id="leaveBtn" class="danger">Leave room</button>
+    </div>
+  </section>
+
+  <script src="popup.js"></script>
+</body>
+</html>

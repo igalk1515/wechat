@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Sketch Together",
+  "description": "Draw on any webpage and invite others to draw with you in real time.",
+  "version": "0.1.0",
+  "permissions": ["storage", "tabs"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "Sketch Together"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/overlay.js", "content/toolbar.js", "content/content.js"],
+      "css": ["content/overlay.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}

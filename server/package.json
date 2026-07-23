@@ -1,0 +1,13 @@
+{
+  "name": "sketch-together-server",
+  "version": "0.1.0",
+  "private": true,
+  "description": "WebSocket relay server for the Sketch Together Chrome extension",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
