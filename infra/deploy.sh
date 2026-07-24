@@ -62,13 +62,17 @@ BODY=$(curl -s --max-time 15 "https://$DOMAIN/")
 echo "$BODY"
 echo "$BODY" | grep -q "$REL" || { echo "FATAL: live health does not report $REL - old code still running?" >&2; exit 1; }
 
-say "smoke: websocket upgrade (expect 101)"
-CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 --http1.1 \
-  -H 'Connection: Upgrade' -H 'Upgrade: websocket' \
-  -H 'Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==' -H 'Sec-WebSocket-Version: 13' \
-  "https://$DOMAIN/")
-echo "upgrade -> $CODE"
-[ "$CODE" = "101" ] || { echo "FATAL: websocket upgrade failed" >&2; exit 1; }
+say "smoke: real websocket handshake (expect hello from server)"
+node -e "
+const WebSocket = require('./server/node_modules/ws');
+const ws = new WebSocket('wss://$DOMAIN');
+const t = setTimeout(() => { console.error('FATAL: no hello within 10s'); process.exit(1); }, 10000);
+ws.on('message', (d) => {
+  const m = JSON.parse(d);
+  if (m.type === 'hello') { console.log('websocket OK, server said hello as ' + m.clientId); clearTimeout(t); ws.close(); process.exit(0); }
+});
+ws.on('error', (e) => { console.error('FATAL: ' + e.message); process.exit(1); });
+"
 
 say "co-tenant smoke (expect 2xx/3xx)"
 for u in https://markav.igal-web.com https://babybet.igal-web.com https://igal-web.com https://navso.tech; do

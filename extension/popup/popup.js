@@ -3,7 +3,7 @@
 
 const $ = (id) => document.getElementById(id);
 
-const DEFAULT_SERVER = 'ws://localhost:8787';
+const DEFAULT_SERVER = 'wss://sketch.igal-web.com';
 
 let status = { conn: 'idle', error: null, roomCode: null, url: null, peers: 0 };
 let activeTab = null;

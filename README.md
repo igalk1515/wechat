@@ -13,7 +13,12 @@ Draw and sketch on top of any webpage — and invite friends to draw with you in
 
 ## Setup
 
-### 1. Start the server
+The extension comes pre-configured to use the public server at
+`wss://sketch.igal-web.com` — **no server setup needed**. Just load the
+extension and draw.
+
+<details>
+<summary>Running your own server instead (optional)</summary>
 
 ```
 cd server
@@ -21,9 +26,12 @@ npm install
 node server.js
 ```
 
-It listens on `ws://localhost:8787`.
+It listens on `ws://localhost:8787` — put that address in the popup's
+"Server address" field. See `infra/DEPLOY.md` for the production deploy.
 
-### 2. Load the extension
+</details>
+
+### Load the extension
 
 1. Open Chrome and go to `chrome://extensions`
 2. Turn on **Developer mode** (top right)
