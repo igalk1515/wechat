@@ -4,3 +4,4 @@ node_modules/
 *.pem
 .env*
 server/release.txt
+ChatGPT Image*

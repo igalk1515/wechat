@@ -1,4 +1,5 @@
-// Floating in-page toolbar: draw toggle, pen/eraser, color, size, clear, room code.
+// Floating in-page toolbar: draw toggle, tools (pen/shapes/eraser), color,
+// size, undo/redo, clear, room code, minimize and exit.
 
 window.__sketch = window.__sketch || {};
 
@@ -6,14 +7,24 @@ window.__sketch.toolbar = (function () {
   let bar = null;
   let overlay = null;
   let drawBtn = null;
-  let penBtn = null;
-  let eraseBtn = null;
   let roomEl = null;
+  let minBtn = null;
+  const toolBtns = new Map(); // mode -> button
 
-  function button(label, title, onClick) {
+  const TOOLS = [
+    ['pen', '🖊️', 'Pen — draw freehand (P)'],
+    ['line', '╱', 'Line (L)'],
+    ['arrow', '➚', 'Arrow (A)'],
+    ['rect', '▭', 'Rectangle (R)'],
+    ['ellipse', '◯', 'Circle / ellipse (C)'],
+    ['erase', '🧽', 'Eraser — removes a whole stroke (E)'],
+  ];
+
+  function button(label, title, onClick, cls) {
     const b = document.createElement('button');
     b.textContent = label;
     b.title = title;
+    if (cls) b.className = cls;
     b.addEventListener('click', onClick);
     return b;
   }
@@ -26,13 +37,14 @@ window.__sketch.toolbar = (function () {
 
   function refreshToolButtons() {
     const mode = overlay.getTool().mode;
-    penBtn.classList.toggle('st-active', mode === 'pen');
-    eraseBtn.classList.toggle('st-active', mode === 'erase');
+    for (const [m, b] of toolBtns) b.classList.toggle('st-active', m === mode);
   }
 
   function refreshDrawButton(on) {
     drawBtn.classList.toggle('st-active', on);
-    drawBtn.title = on ? 'Drawing ON — click to pass clicks to the page (Esc)' : 'Drawing OFF — click to draw';
+    drawBtn.title = on
+      ? 'Drawing is ON — click (or Esc) to pause and use the page normally'
+      : 'Drawing is OFF — click to draw';
   }
 
   function makeDraggable(handle) {
@@ -58,6 +70,12 @@ window.__sketch.toolbar = (function () {
     });
   }
 
+  function setMinimized(min) {
+    bar.classList.toggle('st-minimized', min);
+    minBtn.textContent = min ? '＋' : '−';
+    minBtn.title = min ? 'Expand toolbar' : 'Minimize toolbar';
+  }
+
   function create(opts) {
     if (bar) return;
     overlay = opts.overlay;
@@ -76,16 +94,14 @@ window.__sketch.toolbar = (function () {
     bar.appendChild(drawBtn);
     bar.appendChild(sep());
 
-    penBtn = button('🖊️', 'Pen (P)', () => {
-      overlay.setTool({ mode: 'pen' });
-      refreshToolButtons();
-    });
-    eraseBtn = button('🧽', 'Eraser — removes a whole stroke (E)', () => {
-      overlay.setTool({ mode: 'erase' });
-      refreshToolButtons();
-    });
-    bar.appendChild(penBtn);
-    bar.appendChild(eraseBtn);
+    for (const [mode, label, title] of TOOLS) {
+      const b = button(label, title, () => {
+        overlay.setTool({ mode });
+        refreshToolButtons();
+      });
+      toolBtns.set(mode, b);
+      bar.appendChild(b);
+    }
 
     bar.appendChild(button('↩️', 'Undo (Ctrl+Z)', () => overlay.undo()));
     bar.appendChild(button('↪️', 'Redo (Ctrl+Y)', () => overlay.redo()));
@@ -123,6 +139,15 @@ window.__sketch.toolbar = (function () {
     bar.appendChild(roomEl);
     setRoomCode(opts.roomCode || '');
 
+    bar.appendChild(sep());
+    minBtn = button('−', 'Minimize toolbar', () => setMinimized(!bar.classList.contains('st-minimized')), 'st-min-btn');
+    bar.appendChild(minBtn);
+    bar.appendChild(button('✕', 'Leave the room', () => {
+      if (window.confirm('Leave the drawing room? The drawing stays for the others.')) {
+        if (opts.onExit) opts.onExit();
+      }
+    }, 'st-exit-btn'));
+
     document.documentElement.appendChild(bar);
     refreshToolButtons();
     refreshDrawButton(overlay.getDrawMode());
@@ -132,6 +157,7 @@ window.__sketch.toolbar = (function () {
     if (!bar) return;
     bar.remove();
     bar = null;
+    toolBtns.clear();
   }
 
   function setRoomCode(code) {

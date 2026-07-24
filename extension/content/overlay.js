@@ -40,6 +40,10 @@ window.__sketch.overlay = (function () {
   let erasing = false;
   let eraseBatch = []; // strokes removed during the current drag (for undo)
 
+  // Shape drag state (line/arrow/rect/ellipse): anchor point of the drag
+  const SHAPE_TOOLS = new Set(['line', 'arrow', 'rect', 'ellipse']);
+  let shapeStart = null;
+
   // Undo/redo: actions are {type:'draw', stroke} or {type:'delete', strokes:[]}
   let undoStack = [];
   let redoStack = [];
@@ -198,6 +202,39 @@ window.__sketch.overlay = (function () {
     emit({ type: 'delete_strokes', strokeIds: hits.map((s) => s.id) });
   }
 
+  // ---- shapes: generate polyline points so shapes ARE strokes ----
+  // (sync, history, eraser hit-testing and undo all work on them for free)
+
+  function shapePoints(kind, a, b, size) {
+    const [ax, ay] = a;
+    const [bx, by] = b;
+    if (kind === 'line') return [a, b];
+    if (kind === 'arrow') {
+      const angle = Math.atan2(by - ay, bx - ax);
+      const head = Math.max(14, size * 3.5);
+      const h = (side) => [
+        Math.round(bx - head * Math.cos(angle + side * Math.PI / 6)),
+        Math.round(by - head * Math.sin(angle + side * Math.PI / 6)),
+      ];
+      // Retrace through the tip so one polyline draws shaft + both head lines
+      return [a, b, h(1), b, h(-1)];
+    }
+    if (kind === 'rect') return [a, [bx, ay], b, [ax, by], a];
+    if (kind === 'ellipse') {
+      const cx = (ax + bx) / 2;
+      const cy = (ay + by) / 2;
+      const rx = Math.abs(bx - ax) / 2;
+      const ry = Math.abs(by - ay) / 2;
+      const pts = [];
+      for (let i = 0; i <= 36; i++) {
+        const t = (i / 36) * Math.PI * 2;
+        pts.push([Math.round(cx + rx * Math.cos(t)), Math.round(cy + ry * Math.sin(t))]);
+      }
+      return pts;
+    }
+    return [a, b];
+  }
+
   // ---- undo / redo (own actions only) ----
 
   function pushUndo(action) {
@@ -267,6 +304,11 @@ window.__sketch.overlay = (function () {
       return;
     }
 
+    if (SHAPE_TOOLS.has(tool.mode)) {
+      shapeStart = [x, y];
+      return;
+    }
+
     const id = idPrefix + '-' + (++strokeCounter);
     localStroke = { id, mode: 'pen', color: tool.color, size: tool.size, points: [[x, y]] };
     indexStroke(localStroke);
@@ -284,6 +326,17 @@ window.__sketch.overlay = (function () {
       }
       return;
     }
+    if (shapeStart) {
+      // Live preview: redraw everything, then the shape-in-progress on top
+      redraw();
+      drawStrokeFrom({
+        mode: 'pen',
+        color: tool.color,
+        size: tool.size,
+        points: shapePoints(tool.mode, shapeStart, pagePoint(e), tool.size),
+      }, 0);
+      return;
+    }
     if (!localStroke) return;
     const events = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
     const from = localStroke._drawn || 0;
@@ -297,11 +350,34 @@ window.__sketch.overlay = (function () {
     drawStrokeFrom(localStroke, from);
   }
 
-  function onPointerUp() {
+  function onPointerUp(e) {
     if (erasing) {
       erasing = false;
       if (eraseBatch.length) pushUndo({ type: 'delete', strokes: eraseBatch });
       eraseBatch = [];
+      return;
+    }
+    if (shapeStart) {
+      const end = e ? pagePoint(e) : shapeStart;
+      const [ax, ay] = shapeStart;
+      const moved = Math.abs(end[0] - ax) + Math.abs(end[1] - ay) > 3;
+      if (moved) {
+        const id = idPrefix + '-' + (++strokeCounter);
+        const stroke = {
+          id,
+          mode: 'pen',
+          color: tool.color,
+          size: tool.size,
+          points: shapePoints(tool.mode, shapeStart, end, tool.size),
+        };
+        indexStroke(stroke);
+        emit({ type: 'stroke_start', strokeId: id, mode: 'pen', color: stroke.color, size: stroke.size });
+        emit({ type: 'stroke_points', strokeId: id, points: stroke.points });
+        emit({ type: 'stroke_end', strokeId: id });
+        pushUndo({ type: 'draw', stroke });
+      }
+      shapeStart = null;
+      redraw();
       return;
     }
     if (!localStroke) return;
@@ -328,6 +404,10 @@ window.__sketch.overlay = (function () {
       // Tool hotkeys while drawing
       if (k === 'e') setTool({ mode: 'erase' });
       else if (k === 'p' || k === 'b') setTool({ mode: 'pen' });
+      else if (k === 'l') setTool({ mode: 'line' });
+      else if (k === 'a') setTool({ mode: 'arrow' });
+      else if (k === 'r') setTool({ mode: 'rect' });
+      else if (k === 'c' || k === 'o') setTool({ mode: 'ellipse' });
     }
   }
 
@@ -413,6 +493,7 @@ window.__sketch.overlay = (function () {
     drawMode = false;
     erasing = false;
     eraseBatch = [];
+    shapeStart = null;
     undoStack = [];
     redoStack = [];
   }

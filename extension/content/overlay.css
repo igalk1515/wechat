@@ -95,3 +95,12 @@
   height: 20px;
   background: #3a4356;
 }
+
+#sketch-together-toolbar .st-exit-btn:hover {
+  background: #7f1d1d;
+}
+
+/* Minimized: only the drag handle and the expand button stay visible */
+#sketch-together-toolbar.st-minimized > *:not(.st-handle):not(.st-min-btn) {
+  display: none;
+}

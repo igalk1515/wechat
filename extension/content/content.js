@@ -43,6 +43,7 @@
           S.overlay.clearAll();
           post({ type: 'draw', msg: { type: 'clear' } });
         },
+        onExit: () => post({ type: 'leave' }),
       });
       S.overlay.setDrawMode(true);
     }

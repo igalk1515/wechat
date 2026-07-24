@@ -271,6 +271,9 @@ chrome.runtime.onConnect.addListener((port) => {
       if (!session || port._url !== session.url) return;
       applyDrawToCache(m.msg);
       sendWs(m.msg);
+    } else if (m.type === 'leave') {
+      sendWs({ type: 'leave_room' });
+      endSession();
     }
   });
 });
