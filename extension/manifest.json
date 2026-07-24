@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Sketch Together",
   "description": "Draw on any webpage and invite others to draw with you in real time.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "permissions": ["storage", "tabs"],
   "background": {
     "service_worker": "background.js"

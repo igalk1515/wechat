@@ -174,3 +174,19 @@ button:disabled {
 .btnRow button {
   flex: 1;
 }
+
+.advanced {
+  margin-top: 14px;
+}
+
+.advanced summary {
+  color: #9aa3b5;
+  font-size: 11px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.advanced label {
+  margin-top: 8px;
+  margin-bottom: 0;
+}

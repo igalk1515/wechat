@@ -14,10 +14,6 @@
 
   <!-- No session: create or join -->
   <section id="viewIdle" hidden>
-    <label>Server address
-      <input id="serverUrl" type="text" placeholder="wss://sketch.igal-web.com" spellcheck="false" />
-    </label>
-
     <button id="createBtn" class="primary">Create room on this page</button>
     <div id="createHint" class="hint" hidden>Can't draw on this page — open a normal website first.</div>
 
@@ -27,6 +23,13 @@
       <input id="joinCode" type="text" placeholder="CODE" maxlength="6" spellcheck="false" autocomplete="off" />
       <button id="joinBtn">Join</button>
     </div>
+
+    <details class="advanced">
+      <summary>Advanced</summary>
+      <label>Server address
+        <input id="serverUrl" type="text" placeholder="wss://sketch.igal-web.com" spellcheck="false" />
+      </label>
+    </details>
   </section>
 
   <!-- Active session -->

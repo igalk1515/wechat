@@ -58,4 +58,4 @@ Open two Chrome **profiles** (or a normal + incognito window with the extension 
 - The server keeps drawings in memory only. An empty room is deleted 60 seconds after the last person leaves.
 - Drawing coordinates are anchored to the page (they scroll with it), but if two people have very different window widths, a responsive page may reflow and annotations can drift. Works best with similar window sizes.
 - Undo/redo history is per person (you undo your own strokes) and is lost after clearing or refreshing the page.
-- Everyone connects to the same server address (popup setting, default `ws://localhost:8787`). To draw with people on other computers, run the server somewhere they can all reach and change the address in the popup.
+- Everyone connects to the public server (`wss://sketch.igal-web.com`) automatically — install and draw, nothing to configure. A custom server (e.g. localhost for development) can be set under **Advanced** in the popup.

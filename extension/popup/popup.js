@@ -66,8 +66,10 @@ function send(msg) {
 }
 
 async function init() {
-  const stored = await chrome.storage.local.get('serverUrl');
-  $('serverUrl').value = stored.serverUrl || DEFAULT_SERVER;
+  // Note: key is serverUrl2 — v0.1.0 installs saved a localhost address under
+  // the old key, which must not override the public default.
+  const stored = await chrome.storage.local.get('serverUrl2');
+  $('serverUrl').value = stored.serverUrl2 || DEFAULT_SERVER;
 
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   activeTab = tab || null;
@@ -78,7 +80,7 @@ async function init() {
 
 function serverUrl() {
   const v = $('serverUrl').value.trim() || DEFAULT_SERVER;
-  chrome.storage.local.set({ serverUrl: v });
+  chrome.storage.local.set({ serverUrl2: v });
   return v;
 }
 
