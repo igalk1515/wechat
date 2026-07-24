@@ -6,12 +6,12 @@ window.__sketch = window.__sketch || {};
 window.__sketch.toolbar = (function () {
   let bar = null;
   let overlay = null;
-  let drawBtn = null;
   let roomEl = null;
   let minBtn = null;
   const toolBtns = new Map(); // mode -> button
 
   const TOOLS = [
+    ['cursor', '✋', 'Use the page — clicks go to the website, not the drawing (Esc)'],
     ['pen', '🖊️', 'Pen — draw freehand (P)'],
     ['line', '╱', 'Line (L)'],
     ['arrow', '➚', 'Arrow (A)'],
@@ -38,13 +38,6 @@ window.__sketch.toolbar = (function () {
   function refreshToolButtons() {
     const mode = overlay.getTool().mode;
     for (const [m, b] of toolBtns) b.classList.toggle('st-active', m === mode);
-  }
-
-  function refreshDrawButton(on) {
-    drawBtn.classList.toggle('st-active', on);
-    drawBtn.title = on
-      ? 'Drawing is ON — click (or Esc) to pause and use the page normally'
-      : 'Drawing is OFF — click to draw';
   }
 
   function makeDraggable(handle) {
@@ -89,10 +82,6 @@ window.__sketch.toolbar = (function () {
     handle.title = 'Drag to move';
     bar.appendChild(handle);
     makeDraggable(handle);
-
-    drawBtn = button('✏️', '', () => overlay.setDrawMode(!overlay.getDrawMode()));
-    bar.appendChild(drawBtn);
-    bar.appendChild(sep());
 
     for (const [mode, label, title] of TOOLS) {
       const b = button(label, title, () => {
@@ -150,7 +139,6 @@ window.__sketch.toolbar = (function () {
 
     document.documentElement.appendChild(bar);
     refreshToolButtons();
-    refreshDrawButton(overlay.getDrawMode());
   }
 
   function destroy() {
@@ -173,7 +161,6 @@ window.__sketch.toolbar = (function () {
     destroy,
     setRoomCode,
     setVisible,
-    refreshDrawButton: (on) => drawBtn && refreshDrawButton(on),
     refreshTools: () => bar && refreshToolButtons(),
   };
 })();

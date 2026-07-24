@@ -389,9 +389,10 @@ window.__sketch.overlay = (function () {
 
   function onKeyDown(e) {
     if (e.key === 'Escape' && drawMode) {
-      setDrawMode(false);
+      setTool({ mode: 'cursor' });
       return;
     }
+    // In cursor mode the page owns the keyboard (user may be typing in a form)
     if (!drawMode) return;
     const k = e.key.toLowerCase();
     if ((e.ctrlKey || e.metaKey) && k === 'z' && !e.shiftKey) {
@@ -525,10 +526,12 @@ window.__sketch.overlay = (function () {
     redraw();
   }
 
+  // drawMode is derived from the tool: 'cursor' = use the page, anything
+  // else = the mouse draws. One concept, one row of buttons.
   function setDrawMode(on) {
     drawMode = !!on;
     if (container) container.classList.toggle('st-drawmode', drawMode);
-    if (!drawMode && (localStroke || erasing)) onPointerUp();
+    if (!drawMode && (localStroke || erasing || shapeStart)) onPointerUp();
     if (onDrawModeChange) onDrawModeChange(drawMode);
   }
 
@@ -539,6 +542,7 @@ window.__sketch.overlay = (function () {
 
   function setTool(patch) {
     Object.assign(tool, patch);
+    if (patch.mode) setDrawMode(patch.mode !== 'cursor');
     if (onToolChange) onToolChange({ ...tool });
   }
 

@@ -33,7 +33,6 @@
       sessionActive = true;
       S.overlay.create({
         onEvent: (drawMsg) => post({ type: 'draw', msg: drawMsg }),
-        onDrawModeChange: (on) => S.toolbar.refreshDrawButton(on),
         onToolChange: () => S.toolbar.refreshTools(),
       });
       S.toolbar.create({
@@ -45,7 +44,7 @@
         },
         onExit: () => post({ type: 'leave' }),
       });
-      S.overlay.setDrawMode(true);
+      S.overlay.setTool({ mode: 'pen' });
     }
     S.toolbar.setRoomCode(msg.roomCode);
     S.overlay.loadHistory(msg.history || []);

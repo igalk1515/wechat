@@ -40,13 +40,15 @@ It listens on `ws://localhost:8787` — put that address in the popup's
 ### 3. Draw!
 
 - Open any normal website (http/https), click the extension icon, click **Create room on this page**.
-- A toolbar appears in the top-right of the page:
-  - ✏️ — toggle draw mode on/off (when off, the page is clickable again; **Esc** also turns it off)
-  - 🖊️ / 🧽 — pen / eraser (hotkeys **P** and **E** while drawing). The eraser removes a **whole stroke** at once — swipe over any line and it disappears for everyone.
-  - ↩️ / ↪️ — undo / redo your own actions (**Ctrl+Z** / **Ctrl+Y** or **Ctrl+Shift+Z**). Undo works for both drawing and erasing, and syncs to everyone.
+- A toolbar appears in the top-right of the page. One tool is always selected —
+  it's simply what your mouse does right now:
+  - ✋ — use the page normally (clicks go to the website; **Esc** switches here)
+  - 🖊️ pen (**P**) · ╱ line (**L**) · ➚ arrow (**A**) · ▭ rectangle (**R**) · ◯ circle (**C**)
+  - 🧽 eraser (**E**) — removes a **whole stroke** at once, for everyone
+  - ↩️ / ↪️ — undo / redo your own actions (**Ctrl+Z** / **Ctrl+Y**), synced to everyone
   - color picker and brush size slider
   - 🗑️ — clear the drawing for everyone
-  - the room code (click to copy)
+  - the room code (click to copy) · **−** minimize the toolbar · **✕** leave the room
 - The popup lets you show/hide the overlay and leave the room.
 
 ## Testing multiplayer on one computer
